@@ -1,0 +1,21 @@
+{
+  "name": "bot-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/bot.js",
+    "dev": "nodemon src/bot.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.20.0",
+    "discord.js": "^12.3.1",
+    "dotenv": "^8.2.0",
+    "faker": "^5.0.0",
+    "nodemon": "^2.0.4"
+  }
+}
