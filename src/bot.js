@@ -53,12 +53,21 @@ client.on('message', (message) => {
             message.channel.send(message.author.username + ' est une pute')
             
         }
+
+        //disables the bot
+        if (CMD == 'kill') {
+            setTimeout(() => process.exit(), 500);
+        }
+
+        //generates a random nickname
         if (CMD === "nickname" || CMD === "n") {
             axios.get(emojiURL).then( response => {
                 emojiList = response.data;
                 rnd_number = getRandomInt(0,emojiList.length);
                 rnd_emoji = emojiList[rnd_number];
                 var word = faker.random.word();
+
+                //translates a random nickname in french
                 if (args[0] === 'f' ||args[0] === 'french') {
                     const agent = new https.Agent({  
                         rejectUnauthorized: false
