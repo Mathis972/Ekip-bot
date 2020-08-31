@@ -42,50 +42,76 @@ client.on("ready", () => {
   console.log(client.user.tag + " has logged in MMS");
 });
 
+// while (game_started === true) {
+//   console.log("e");
+//   client.on("messageReactionAdd", (messageReaction) => {
+//     console.log(messageReaction);
+//     if (
+//       messageReaction == "🍌" &&
+//       message.author.username == CURRENT_PLAYER.username
+//     ) {
+//       message.reply("ton action est de").then((response) => {
+//         while (CURRENT_PLAYER === message.author) {
+//           CURRENT_PLAYER =
+//             PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
+//         }
+//         message.channel.send("\n Action ou V?, " + CURRENT_PLAYER.username);
+//       });
+//     }
+//     if (CMD == "👅" && message.author.username == CURRENT_PLAYER.username) {
+//       message.reply("dis moi").then((response) => {
+//         while (CURRENT_PLAYER === message.author) {
+//           CURRENT_PLAYER =
+//             PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
+//         }
+//         message.channel.send("\n Action ou V?, " + CURRENT_PLAYER.username);
+//       });
+//     }
+//   });
+// }
+
+// message.channel.send("tg jeu en cours");
+// if (message.content.startsWith(PREFIX)) {
+//   const [CMD, ...args] = message.content
+//     .trim()
+//     .substr(PREFIX.length)
+//     .split(/\s+/);
+//   if (
+//     CMD == "action" &&
+//     message.author.username == CURRENT_PLAYER.username
+//   ) {
+//     message.reply("ton action est de").then((response) => {
+//       while (CURRENT_PLAYER === message.author) {
+//         CURRENT_PLAYER =
+//           PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
+//       }
+//       message.channel.send("\n Action ou V?, " + CURRENT_PLAYER.username);
+//     });
+//   }
+//   if (
+//     CMD == "vérité" &&
+//     message.author.username == CURRENT_PLAYER.username
+//   ) {
+//     message.reply("dis moi").then((response) => {
+//       while (CURRENT_PLAYER === message.author) {
+//         CURRENT_PLAYER =
+//           PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
+//       }
+//       message.channel.send("\n Action ou V?, " + CURRENT_PLAYER.username);
+//     });
+//   }
+//   if (CMD == "stop") {
+//     message.channel.send("Fin de jeu");
+//     game_started = false;
+//   } else if (message.author.username != CURRENT_PLAYER.username) {
+//     message.reply("tu es qui ?");
+//   }
+// }
 client.on("message", (message) => {
   // EKIPAFON
+  //?
   if (message.author.bot) return;
 
-  // GAME
-
-  if (game_started == true) {
-    // message.channel.send("tg jeu en cours");
-    if (message.content.startsWith(PREFIX)) {
-      const [CMD, ...args] = message.content
-        .trim()
-        .substr(PREFIX.length)
-        .split(/\s+/);
-      if (
-        CMD == "action" &&
-        message.author.username == CURRENT_PLAYER.username
-      ) {
-        message.reply("ton action est de").then((response) => {
-          while (CURRENT_PLAYER === message.author) {
-            CURRENT_PLAYER =
-              PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
-          }
-        });
-      }
-      if (
-        CMD == "vérité" &&
-        message.author.username == CURRENT_PLAYER.username
-      ) {
-        message.reply("dis moi").then((response) => {
-          while (CURRENT_PLAYER === message.author) {
-            CURRENT_PLAYER =
-              PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
-          }
-        });
-      }
-      if (CMD == "stop") {
-        message.channel.send("Fin de jeu");
-        game_started = false;
-      } else if (message.author.username != CURRENT_PLAYER.username) {
-        message.reply("tu es qui ?");
-      }
-    }
-    return;
-  }
   //COMMANDS
 
   if (message.content === "moi") {
@@ -179,10 +205,124 @@ client.on("message", (message) => {
         message.channel.send(value.user.username);
       }
       CURRENT_PLAYER = PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
-      message.channel.send("\n Action ou V?, " + CURRENT_PLAYER.username);
+      message.reply("\n Action ou V?, ").then(async (message) => {
+        await message.react("👅").then(async (r) => {
+          await message.react("🍌");
+        });
+        //AWAIT ??
+        // message
+        //   .awaitReactions(
+        //     (reaction, user) =>
+        //       user.id == CURRENT_PLAYER.id &&
+        //       (reaction.emoji.name == "👅" || reaction.emoji.name == "🍌"),
+        //     { max: 1, time: 30000 }
+        //   )
+        //   .then((collected) => {
+        //     if (collected.first().emoji.name == "🍌") {
+        //       message.reply("Pog");
+        //       //TODO Nouveau msg redemandant
+        //       message.reply("\n Action ou V?, ").then(async (message) => {
+        //         await message.react("👅").then(async (r) => {
+        //           await message.react("🍌");
+        //         });
+        //       });
+        //       // client.destroy();
+        //     } else message.reply("Operation canceled.");
+        //   })
+        //   .catch(() => {
+        //     message.reply("No reaction after 30 seconds, operation canceled");
+        //   });
+      });
     }
   }
+  // if (game_started === true) {
+  //   message
+  //     .awaitReactions(
+  //       (reaction, user) =>
+  //         user.id == CURRENT_PLAYER.id &&
+  //         (reaction.emoji.name == "👅" || reaction.emoji.name == "🍌"),
+  //       { max: 1, time: 30000 }
+  //     )
+  //     .then((collected) => {
+  //       if (collected.first().emoji.name == "🍌") {
+  //         message.reply("Pog");
+  //         //TODO Nouveau msg redemandant
+  //         // client.destroy();
+  //       } else message.reply("Operation canceled.");
+  //     })
+  //     .catch(() => {
+  //       message.reply("No reaction after 30 seconds, operation canceled");
+  //     });
+  // }
   console.log(message.author.tag);
 });
 
+// TRUTH OR DARE
+client.on("messageReactionAdd", (messageReaction, user) => {
+  if (game_started === false) return;
+  if (user.bot) return;
+  console.log(user.username);
+  console.log(messageReaction._emoji.name);
+  if (
+    messageReaction._emoji.name == "🍌" &&
+    user.username == CURRENT_PLAYER.username
+  ) {
+    messageReaction.message.channel
+      .send("ton action est de")
+      .then((response) => {
+        response.react("👍").then((r) => {
+          response.react("👎");
+        });
+        response
+          .awaitReactions(
+            (reaction, user) =>
+              !user.bot &&
+              (reaction.emoji.name == "👍" || reaction.emoji.name == "👎"),
+            { max: 1, time: 30000 }
+          )
+          .then((collected) => {
+            if (collected.first().emoji.name == "👍") {
+              response.channel
+                .send("\n Action ou V?, " + "<@" + CURRENT_PLAYER.id + ">")
+                .then((message) => {
+                  message.react("👅").then(async (r) => {
+                    await message.react("🍌");
+                  });
+                });
+            } else {
+              response.channel.send("PARTIE TERMIN222222");
+              game_started = false;
+            }
+          })
+          .catch(() => {
+            response.channel.send(
+              "No reaction after 30 seconds, game canceled"
+            );
+            game_started = false;
+          });
+        // while (CURRENT_PLAYER === message.author) {
+        //   CURRENT_PLAYER =
+        //     PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
+        // }
+      });
+  }
+  if (
+    messageReaction._emoji.name == "👅" &&
+    user.username == CURRENT_PLAYER.username
+  ) {
+    messageReaction.message.channel.send("dis moi").then((response) => {
+      // while (CURRENT_PLAYER === message.author) {
+      //   CURRENT_PLAYER =
+      //     PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
+      // }
+      response.channel
+        .send("\n Action ou V?, " + "<@" + CURRENT_PLAYER.id + ">")
+        .then((message) => {
+          message.react("👅").then(async (r) => {
+            await message.react("🍌");
+          });
+        });
+    });
+  }
+});
 client.login(process.env.DISCORD_BOT_TOKEN);
