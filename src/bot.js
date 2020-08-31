@@ -139,16 +139,21 @@ client.on("message", (message) => {
         message.channel.send(value.user.username);
       }
       CURRENT_PLAYER = PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
-      message.reply("\n Action ou V?, ").then(async (message) => {
-        await message.react("👅").then(async (r) => {
-          await message.react("🍌");
+      message.channel
+        .send("Action ou V?, " + "<@" + CURRENT_PLAYER.id + ">")
+        .then(async (message) => {
+          await message.react("👅").then(async (r) => {
+            await message.react("🍌");
+          });
         });
-      });
     }
   }
 
   console.log(message.author.tag);
 });
+
+//TODO Aurait probablement été possible de loop dans un while (dans le IF CMD = play) avec 2 Message.awaitReactiosn(),
+//réglerait le bug de pouvoir avoir ACTION / VERITE
 
 // TRUTH OR DARE
 client.on("messageReactionAdd", (messageReaction, user) => {
@@ -156,10 +161,9 @@ client.on("messageReactionAdd", (messageReaction, user) => {
   if (user.bot) return;
   console.log(user.username);
   console.log(messageReaction._emoji.name);
-  if (
-    messageReaction._emoji.name == "🍌" &&
-    user.username == CURRENT_PLAYER.username
-  ) {
+  console.log(CURRENT_PLAYER.username);
+
+  if (messageReaction._emoji.name == "🍌" && user.id == CURRENT_PLAYER.id) {
     messageReaction.message.channel
       .send("ton action est de")
       .then((response) => {
@@ -175,6 +179,10 @@ client.on("messageReactionAdd", (messageReaction, user) => {
           )
           .then((collected) => {
             if (collected.first().emoji.name == "👍") {
+              while (CURRENT_PLAYER.id === user.id) {
+                CURRENT_PLAYER =
+                  PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
+              }
               response.channel
                 .send("\n Action ou V?, " + "<@" + CURRENT_PLAYER.id + ">")
                 .then((message) => {
@@ -193,27 +201,41 @@ client.on("messageReactionAdd", (messageReaction, user) => {
             );
             game_started = false;
           });
-        // while (CURRENT_PLAYER === message.author) {
-        //   CURRENT_PLAYER =
-        //     PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
-        // }
       });
   }
-  if (
-    messageReaction._emoji.name == "👅" &&
-    user.username == CURRENT_PLAYER.username
-  ) {
+  if (messageReaction._emoji.name == "👅" && user.id == CURRENT_PLAYER.id) {
     messageReaction.message.channel.send("dis moi").then((response) => {
-      // while (CURRENT_PLAYER === message.author) {
-      //   CURRENT_PLAYER =
-      //     PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
-      // }
-      response.channel
-        .send("\n Action ou V?, " + "<@" + CURRENT_PLAYER.id + ">")
-        .then((message) => {
-          message.react("👅").then(async (r) => {
-            await message.react("🍌");
-          });
+      response.react("👍").then((r) => {
+        response.react("👎");
+      });
+      response
+        .awaitReactions(
+          (reaction, user) =>
+            !user.bot &&
+            (reaction.emoji.name == "👍" || reaction.emoji.name == "👎"),
+          { max: 1, time: 30000 }
+        )
+        .then((collected) => {
+          if (collected.first().emoji.name == "👍") {
+            while (CURRENT_PLAYER.id === user.id) {
+              CURRENT_PLAYER =
+                PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
+            }
+            response.channel
+              .send("\n Action ou V?, " + "<@" + CURRENT_PLAYER.id + ">")
+              .then((message) => {
+                message.react("👅").then(async (r) => {
+                  await message.react("🍌");
+                });
+              });
+          } else {
+            response.channel.send("PARTIE TERMIN222222");
+            game_started = false;
+          }
+        })
+        .catch(() => {
+          response.channel.send("No reaction after 30 seconds, game canceled");
+          game_started = false;
         });
     });
   }
