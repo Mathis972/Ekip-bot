@@ -152,9 +152,6 @@ client.on("message", (message) => {
   console.log(message.author.tag);
 });
 
-//TODO Aurait probablement été possible de loop dans un while (dans le IF CMD = play) avec 2 Message.awaitReactiosn(),
-//réglerait le bug de pouvoir avoir ACTION / VERITE
-
 // TRUTH OR DARE
 client.on("messageReactionAdd", (messageReaction, user) => {
   if (game_started === false) return;

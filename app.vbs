@@ -1,1 +1,1 @@
-CreateObject("Wscript.Shell").Run "node src/bot.js", 0
+CreateObject("Wscript.Shell").Run "node src/botV2.js", 0
