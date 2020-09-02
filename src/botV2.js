@@ -3,6 +3,7 @@ require("dotenv").config();
 const { Client } = require("discord.js");
 
 const axios = require("axios");
+const fs = require("fs").promises;
 const https = require("https");
 const emojiURL =
   "http://emoji-api.com/emojis?access_key=" + process.env.EMOJI_TOKEN;
@@ -12,7 +13,7 @@ const client = new Client();
 var faker = require("faker");
 const PREFIX = "$$";
 var rnd_number = null;
-var emojiList = [];
+
 var rnd_emoji = null;
 
 //TODO JSON file au lieu d'array ?
@@ -27,6 +28,15 @@ var CURRENT_PLAYER = null;
 var OLD_PLAYER = null;
 var TARGET_PLAYER = null;
 
+//loads emojis from file and injects them in emojiList
+loadEmojis().then((bufferedEmojis) => {
+  emojiList = bufferedEmojis.toString().split(",");
+});
+
+async function loadEmojis() {
+  const data = await fs.readFile("emojis.txt");
+  return data;
+}
 function rerollPlayers() {
   while (CURRENT_PLAYER.id === OLD_PLAYER.id) {
     CURRENT_PLAYER = PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
@@ -93,53 +103,91 @@ client.on("message", (message) => {
 
     // generates a random nickname
     if (CMD === "nickname" || CMD === "n") {
-      axios.get(emojiURL).then((response) => {
-        emojiList = response.data;
-        rnd_number = getRandomInt(0, emojiList.length);
-        rnd_emoji = emojiList[rnd_number];
-        var word = faker.random.word();
+      //Web Scraping VER
+      rnd_number = getRandomInt(0, emojiList.length);
+      rnd_emoji = emojiList[rnd_number];
+      var word = faker.random.word();
 
-        // translates a random nickname in french
-        if (args[0] === "f" || args[0] === "french") {
-          const agent = new https.Agent({
-            rejectUnauthorized: false,
+      // translates a random nickname in french
+      if (args[0] === "f" || args[0] === "french") {
+        const agent = new https.Agent({
+          rejectUnauthorized: false,
+        });
+        axios
+          .post(
+            "https://frengly.com/frengly/data/translateREST",
+            {
+              src: "en",
+              dest: "fr",
+              text: capitalizeFirstLetter(word),
+              email: process.env.FRENGLY_MAIL,
+              password: process.env.FRENGLY_PSWD,
+            },
+            { httpsAgent: agent }
+          )
+          .then((response) => {
+            var translation = response.data.translation;
+            message.channel.send(
+              rnd_emoji + " " + translation + " " + rnd_emoji
+            );
+          })
+          .catch((error) => {
+            console.log(error.message);
           });
-          axios
-            .post(
-              "https://frengly.com/frengly/data/translateREST",
-              {
-                src: "en",
-                dest: "fr",
-                text: capitalizeFirstLetter(word),
-                email: process.env.FRENGLY_MAIL,
-                password: process.env.FRENGLY_PSWD,
-              },
-              { httpsAgent: agent }
-            )
-            .then((response) => {
-              var translation = response.data.translation;
-              message.channel.send(
-                rnd_emoji.character +
-                  " " +
-                  translation +
-                  " " +
-                  rnd_emoji.character
-              );
-            })
-            .catch((error) => {
-              console.log(error.message);
-            });
-        } else {
-          message.channel.send(
-            rnd_emoji.character +
-              " " +
-              capitalizeFirstLetter(word) +
-              " " +
-              rnd_emoji.character
-          );
-        }
-      });
+      } else {
+        message.channel.send(
+          rnd_emoji + " " + capitalizeFirstLetter(word) + " " + rnd_emoji
+        );
+      }
     }
+    //EMOJI API VER
+    // axios.get(emojiURL).then((response) => {
+    //   emojiList = response.data;
+    //   rnd_number = getRandomInt(0, emojiList.length);
+    //   rnd_emoji = emojiList[rnd_number];
+    //   var word = faker.random.word();
+
+    //   // translates a random nickname in french
+    //   if (args[0] === "f" || args[0] === "french") {
+    //     const agent = new https.Agent({
+    //       rejectUnauthorized: false,
+    //     });
+    //     axios
+    //       .post(
+    //         "https://frengly.com/frengly/data/translateREST",
+    //         {
+    //           src: "en",
+    //           dest: "fr",
+    //           text: capitalizeFirstLetter(word),
+    //           email: process.env.FRENGLY_MAIL,
+    //           password: process.env.FRENGLY_PSWD,
+    //         },
+    //         { httpsAgent: agent }
+    //       )
+    //       .then((response) => {
+    //         var translation = response.data.translation;
+    //         message.channel.send(
+    //           rnd_emoji.character +
+    //             " " +
+    //             translation +
+    //             " " +
+    //             rnd_emoji.character
+    //         );
+    //       })
+    //       .catch((error) => {
+    //         console.log(error.message);
+    //       });
+    //   } else {
+    //     message.channel.send(
+    //       rnd_emoji.character +
+    //         " " +
+    //         capitalizeFirstLetter(word) +
+    //         " " +
+    //         rnd_emoji.character
+    //     );
+    //   }
+    // });
+    //}
     //ACTION/VERITE
 
     //STOP LE JEU
@@ -151,7 +199,14 @@ client.on("message", (message) => {
     //COMMENCE LE JEU (POG !)
     if (CMD == "play") {
       const CHANNEL = message.member.voice.channel;
+      if (CHANNEL === null || CHANNEL.members.size < 2) {
+        message.reply(
+          "Une partie nécessite à ce que à minima 2 joueurs soit dans un channel."
+        );
+        return;
+      }
       const PLAYERS = CHANNEL.members;
+      // console.log(PLAYERS.random());
 
       message
         .reply("La partie commence, " + PLAYERS.size + " joueurs")
@@ -163,7 +218,6 @@ client.on("message", (message) => {
             }
             game_started = true;
           };
-          console.log(PLAYERS.get(message.member.id).user.username);
 
           await forLoop();
           CURRENT_PLAYER =

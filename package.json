@@ -17,6 +17,7 @@
     "dotenv": "^8.2.0",
     "faker": "^5.1.0",
     "https": "^1.0.0",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "puppeteer": "^5.2.1"
   }
 }
