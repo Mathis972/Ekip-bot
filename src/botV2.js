@@ -38,13 +38,14 @@ async function loadEmojis() {
   return data;
 }
 function rerollPlayers() {
+  OLD_PLAYER = CURRENT_PLAYER;
   while (CURRENT_PLAYER.id === OLD_PLAYER.id) {
     CURRENT_PLAYER = PLAYERS_ARRAY[getRandomInt(0, PLAYERS_ARRAY.length - 1)];
-    TARGETS_ARRAY = PLAYERS_ARRAY.filter((value) => {
-      return value != CURRENT_PLAYER;
-    });
-    TARGET_PLAYER = TARGETS_ARRAY[getRandomInt(0, TARGETS_ARRAY.length - 1)];
   }
+  TARGETS_ARRAY = PLAYERS_ARRAY.filter((value) => {
+    return value != CURRENT_PLAYER;
+  });
+  TARGET_PLAYER = TARGETS_ARRAY[getRandomInt(0, TARGETS_ARRAY.length - 1)];
 }
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -271,12 +272,10 @@ client.on("message", (message) => {
                           )
                           .then((collected) => {
                             if (collected.first().emoji.name == "👍") {
-                              OLD_PLAYER = CURRENT_PLAYER;
                               rerollPlayers();
 
                               return;
                             } else {
-                              OLD_PLAYER = CURRENT_PLAYER;
                               rerollPlayers();
                               response.channel.send("L");
                               // game_started = false;
@@ -309,11 +308,9 @@ client.on("message", (message) => {
                             )
                             .then((collected) => {
                               if (collected.first().emoji.name == "👍") {
-                                OLD_PLAYER = CURRENT_PLAYER;
                                 rerollPlayers();
                                 return;
                               } else {
-                                OLD_PLAYER = CURRENT_PLAYER;
                                 rerollPlayers();
                                 response.channel.send("L");
                                 // game_started = false;
