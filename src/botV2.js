@@ -98,8 +98,11 @@ client.on("message", (message) => {
     }
 
     // disables the bot
-    if (CMD == "kill") {
+    if (CMD == "kill" && message.member.user.tag === "EyZex972#7677") {
+      message.channel.send("https://tenor.com/XVFz.gif");
       setTimeout(() => process.exit(), 500);
+    } else if (CMD == "kill") {
+      message.channel.send("https://tenor.com/0C6P.gif");
     }
 
     // generates a random nickname
