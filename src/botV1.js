@@ -21,12 +21,12 @@ var PLAYERS_ARRAY = new Array();
 
 var CURRENT_PLAYER = null;
 
-function getRandomInt(min, max) {
+function getRandomInt (min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-function capitalizeFirstLetter(word) {
+function capitalizeFirstLetter (word) {
   letter = word.substr(0, 1);
   if (letter == letter.toUpperCase()) {
     return word;
@@ -105,10 +105,10 @@ client.on("message", (message) => {
               var translation = response.data.translation;
               message.channel.send(
                 rnd_emoji.character +
-                  " " +
-                  translation +
-                  " " +
-                  rnd_emoji.character
+                " " +
+                translation +
+                " " +
+                rnd_emoji.character
               );
             })
             .catch((error) => {
@@ -117,10 +117,10 @@ client.on("message", (message) => {
         } else {
           message.channel.send(
             rnd_emoji.character +
-              " " +
-              capitalizeFirstLetter(word) +
-              " " +
-              rnd_emoji.character
+            " " +
+            capitalizeFirstLetter(word) +
+            " " +
+            rnd_emoji.character
           );
         }
       });

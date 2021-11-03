@@ -12,12 +12,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.20.0",
-    "discord.js": "^12.3.1",
-    "dotenv": "^8.2.0",
+    "@discordjs/builders": "^0.8.2",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "axios": "^0.24.0",
+    "discord-api-types": "^0.24.0",
+    "discord.js": "^13.3.1",
+    "dotenv": "^10.0.0",
     "faker": "^5.1.0",
     "https": "^1.0.0",
     "nodemon": "^2.0.4",
-    "puppeteer": "^5.2.1"
+    "puppeteer": "^11.0.0"
   }
 }
